@@ -1,7 +1,10 @@
 package io.ljunggren.fileUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -100,6 +103,10 @@ public class FileUtils {
         return writeToFile(path, contents == null ? null : String.join(NEW_LINE, contents));
     }
     
+    public static String appendToFile(String path, String content) throws IOException {
+        return appendToFile(path, content, false);
+    }
+    
     public static String appendToFile(String path, String content, boolean newLine) throws IOException {
         return appendToFile(path == null ? null : Paths.get(path), content, newLine).toString();
     }
@@ -113,6 +120,10 @@ public class FileUtils {
         }
         content = newLine ? NEW_LINE + content : content;
         return Files.write(path, content.getBytes(), StandardOpenOption.APPEND);
+    }
+    
+    public static String appendToFile(String path, List<String> contents) throws IOException {
+        return appendToFile(path, contents, false);
     }
     
     public static String appendToFile(String path, List<String> contents, boolean newLine) throws IOException {
@@ -198,6 +209,19 @@ public class FileUtils {
     public static List<File> listFiles(Path path) throws IOException {
         return listFiles(path == null ? null : path.toString());
     }
+    
+    public static List<File> listDirectories(String path) throws IOException {
+        if (path == null) {
+            throw new IOException("Path is null");
+        }
+        return Arrays.stream(new File(path).listFiles())
+                .filter(file -> !file.isFile())
+                .collect(Collectors.toList());
+    }
+    
+    public static List<File> listDirectories(Path path) throws IOException {
+        return listDirectories(path == null ? null : path.toString());
+    }
 
     public static List<File> filterByPrefix(List<File> files, String prefix) {
         if (files == null || prefix == null) {
@@ -217,21 +241,43 @@ public class FileUtils {
                 .collect(Collectors.toList());
     }
     
-    public static void sortByLastModifiedDate(List<File> files) {
-        sortByLastModifiedDate(files, true);
+    public static void orderByLastModifiedDate(List<File> files) {
+        orderByLastModifiedDate(files, false);
     }
 
-    public static void sortByLastModifiedDate(List<File> files, boolean ascending) {
+    public static void orderByLastModifiedDate(List<File> files, boolean descending) {
         if (files == null) {
             return;
         }
         Collections.sort(files, new Comparator<File>() {
             public int compare(File f1, File f2) {
-                return ascending ?
-                        ((Long) f1.lastModified()).compareTo((Long) f2.lastModified()) :
-                        ((Long) f2.lastModified()).compareTo((Long) f1.lastModified());
+                return descending ?
+                        ((Long) f2.lastModified()).compareTo((Long) f1.lastModified()) :
+                        ((Long) f1.lastModified()).compareTo((Long) f2.lastModified());
             }
         });
     }
 
+    public static String readResourceFile(Class<?> clazz, String path) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        InputStream in = clazz.getClassLoader().getResourceAsStream(path);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
+    }
+    
+    public static List<String> parseResourceFile(Class<?> clazz, String path) throws IOException {
+        List<String> lines = new ArrayList<>();
+        InputStream in = clazz.getClassLoader().getResourceAsStream(path);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+        return lines;
+    }
+    
 }
