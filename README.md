@@ -173,3 +173,9 @@ Parse resource File
 ```java
 String lines = FileUtils.parseResourceFile(this.getClass(), pathString);
 ```
+
+File Extension
+
+```java
+String extension = FileUtils.getFileExtension(file);
+```
