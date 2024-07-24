@@ -280,4 +280,15 @@ public class FileUtils {
         return lines;
     }
     
+    public static String getFileExtension(File file) throws IOException {
+        if (file == null) {
+            throw new IOException("File is null");
+        }
+        String filename = file.getName();
+        if (!filename.contains(".")) {
+            throw new IOException("File does not contain an extension");
+        }
+        return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+    
 }
