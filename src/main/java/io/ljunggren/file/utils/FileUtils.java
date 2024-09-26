@@ -1,4 +1,4 @@
-package io.ljunggren.fileUtils;
+package io.ljunggren.file.utils;
 
 import java.io.BufferedReader;
 import java.io.File;

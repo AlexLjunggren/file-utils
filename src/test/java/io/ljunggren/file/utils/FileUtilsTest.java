@@ -1,4 +1,4 @@
-package io.ljunggren.fileUtils;
+package io.ljunggren.file.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
